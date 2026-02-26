@@ -1,0 +1,27 @@
+.mcp.json
+/vendor
+*.swp
+
+# Internal release tooling
+/bin/
+Makefile
+
+# IDE
+.idea
+.vscode
+
+# Claude Code sandbox artifacts
+.bash_profile
+.bashrc
+.gitconfig
+.gitmodules
+.profile
+.ripgreprc
+.zprofile
+.zshrc
+HEAD
+config
+hooks
+objects
+refs
+.claude

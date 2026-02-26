@@ -1,0 +1,4 @@
+v0.1.0 - 2026/02/26
+* Initial release.
+* Eight abilities: execute-php, read-file, write-file, edit-file, delete-file, disable-file, enable-file, list-directory.
+* PHP sandbox with crash recovery and safe mode.

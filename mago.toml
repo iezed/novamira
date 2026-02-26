@@ -1,0 +1,9 @@
+php-version = "8.0"
+
+[source]
+paths = ["includes", "novamira.php"]
+includes = ["vendor/php-stubs/wordpress-stubs", "vendor/wordpress/mcp-adapter/includes", "stubs"]
+excludes = [".git/**"]
+
+[formatter]
+print-width = 120

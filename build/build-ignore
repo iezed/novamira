@@ -1,0 +1,16 @@
+bin/**
+build/**
+docs/**
+vendor/php-stubs/**
+vendor/bin/**
+stubs/**
+release-info.json
+CHANGELOG.txt
+.gitignore
+.editorconfig
+CLAUDE.md
+GEMINI.md
+Makefile
+mago.toml
+composer.json
+composer.lock

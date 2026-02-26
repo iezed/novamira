@@ -1,0 +1,8 @@
+{
+  "requirements": {
+    "requires": "6.9",
+    "requires_php": "7.4",
+    "tested": "6.9"
+  },
+  "versions": []
+}
