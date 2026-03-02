@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/banner.png" alt="Novamira" />
+  <img src="assets/banner.png" alt="Novamira" />
 </p>
 
 MCP server that gives AI agents full access to WordPress through PHP execution and filesystem operations.
