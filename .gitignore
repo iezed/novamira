@@ -2,10 +2,6 @@
 /vendor
 *.swp
 
-# Internal release tooling
-/bin/
-Makefile
-
 # IDE
 .idea
 .vscode
