@@ -109,6 +109,23 @@ add_action('admin_menu', static function () {
 
 $is_enabled = novamira_is_enabled();
 
+if (!$is_enabled && novamira_is_domain_mismatch()) {
+    add_action('admin_notices', static function () {
+        /** @var string $locked */
+        $locked = get_option('novamira_ai_abilities_domain', default_value: '');
+        wp_admin_notice(
+            sprintf(
+                esc_html__(
+                    'Novamira AI Abilities were disabled because the site domain changed (enabled on %s). Re-enable them from the settings page if this is intentional.',
+                    domain: 'novamira',
+                ),
+                '<code>' . esc_html($locked) . '</code>',
+            ),
+            ['type' => 'warning', 'dismissible' => true],
+        );
+    });
+}
+
 if ($is_enabled) {
     // Initialize bundled MCP Adapter — its default server exposes our abilities automatically.
     if (class_exists('WP\MCP\Core\McpAdapter')) {

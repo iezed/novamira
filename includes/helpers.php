@@ -132,8 +132,36 @@ function novamira_is_enabled()
 {
     /** @var mixed $value */
     $value = get_option('novamira_ai_abilities_enabled', default_value: false);
+    if ($value !== '1' && $value !== true) {
+        return false;
+    }
 
-    return $value === '1' || $value === true;
+    // Abilities are locked to the domain they were enabled on.
+    /** @var string $locked_domain */
+    $locked_domain = get_option('novamira_ai_abilities_domain', default_value: '');
+    $current_domain = (string) wp_parse_url(home_url(), PHP_URL_HOST);
+
+    return $locked_domain === $current_domain;
+}
+
+/**
+ * Check whether abilities are nominally enabled but inactive due to a domain mismatch.
+ *
+ * @return bool
+ */
+function novamira_is_domain_mismatch()
+{
+    /** @var mixed $value */
+    $value = get_option('novamira_ai_abilities_enabled', default_value: false);
+    if ($value !== '1' && $value !== true) {
+        return false;
+    }
+
+    /** @var string $locked_domain */
+    $locked_domain = get_option('novamira_ai_abilities_domain', default_value: '');
+    $current_domain = (string) wp_parse_url(home_url(), PHP_URL_HOST);
+
+    return $locked_domain !== $current_domain;
 }
 
 /**

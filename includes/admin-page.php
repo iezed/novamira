@@ -188,6 +188,12 @@ function novamira_render_settings_page()
         check_admin_referer('novamira_settings');
         $enabled = ($_POST['novamira_ai_abilities_enabled'] ?? null) !== null;
         update_option('novamira_ai_abilities_enabled', $enabled);
+        if ($enabled) {
+            update_option('novamira_ai_abilities_domain', (string) wp_parse_url(home_url(), PHP_URL_HOST));
+        }
+        if (!$enabled) {
+            delete_option('novamira_ai_abilities_domain');
+        }
         echo
             '<div class="notice notice-success is-dismissible"><p>'
                 . esc_html__('Settings saved.', domain: 'novamira')
