@@ -1,3 +1,8 @@
+v1.0.0-rc4 - 2026/03/06
+* New: Domain-locking for AI abilities — the site hostname is stored when abilities are enabled. If the domain changes (e.g. a staging database is restored on a different server), abilities automatically deactivate and an admin notice explains what happened.
+* New: MCP server instructions — AI agents now receive context about the WordPress environment (version, active plugins) during MCP initialization.
+* Minor fixes.
+
 v1.0.0-rc3 - 2026/03/03
 * Fix: Shell quoting in the Claude Code mcp add command — the MCP server URL and other env values were not properly quoted, causing syntax errors when pasting the generated command.
 
