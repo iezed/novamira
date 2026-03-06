@@ -127,6 +127,16 @@ if (!$is_enabled && novamira_is_domain_mismatch()) {
 }
 
 if ($is_enabled) {
+    // Customize the MCP server instructions sent to AI agents during initialization.
+    add_filter('mcp_adapter_default_server_config', static function (mixed $config): mixed {
+        if (!is_array($config)) {
+            return $config;
+        }
+        $config['server_name'] = 'Novamira';
+        $config['server_description'] = novamira_build_server_instructions();
+        return $config;
+    });
+
     // Initialize bundled MCP Adapter — its default server exposes our abilities automatically.
     if (class_exists('WP\MCP\Core\McpAdapter')) {
         \WP\MCP\Core\McpAdapter::instance();

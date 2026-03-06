@@ -195,6 +195,64 @@ function novamira_permission_callback()
 }
 
 /**
+ * Build the MCP server instructions sent to AI agents during initialization.
+ *
+ * Includes environment info (PHP/WP versions, plugins) and guidance on using
+ * WordPress-native features instead of hardcoding data in PHP.
+ *
+ * @return string
+ */
+function novamira_build_server_instructions()
+{
+    $lines = [
+        'Novamira gives you unrestricted control over this WordPress installation.',
+        '',
+        '## Environment',
+        '',
+        'WordPress ' . get_bloginfo('version') . ' — PHP ' . PHP_VERSION,
+        '',
+    ];
+
+    if (function_exists('get_plugins')) {
+        /** @var array<string, array{Name?: string, Version?: string}> $all_plugins */
+        $all_plugins = get_plugins();
+        if ($all_plugins !== []) {
+            $lines[] = 'Installed plugins:';
+            foreach ($all_plugins as $plugin_file => $plugin_data) {
+                $name = $plugin_data['Name'] ?? $plugin_file;
+                $version = $plugin_data['Version'] ?? '';
+                $version_suffix = $version !== '' ? ' v' . $version : '';
+                $active = is_plugin_active($plugin_file) ? 'active' : 'inactive';
+                $lines[] = '- ' . $name . $version_suffix . ' (' . $active . ')';
+            }
+            $lines[] = '';
+        }
+    }
+
+    $lines = array_merge($lines, [
+        '## WordPress-native development',
+        '',
+        'IMPORTANT: Prefer WordPress-native features to store and manage data.',
+        'Do not hardcode content in PHP arrays when WordPress has a better mechanism:',
+        '- Custom post types (register_post_type) for structured content',
+        '- Taxonomies (register_taxonomy) for categorization',
+        '- Post meta / custom fields (update_post_meta) for additional data on posts',
+        '- Options API (update_option) for settings and configuration',
+        '- Custom database tables via $wpdb only when the above are insufficient',
+        '',
+        'Take advantage of active plugins. For example if Advanced Custom Fields (ACF)',
+        'is installed, use ACF field groups and get_field()/update_field() instead of',
+        'raw post meta. If WooCommerce is active, use its product post type and APIs',
+        'rather than building a custom shop from scratch.',
+        '',
+        'Use WordPress hooks (actions/filters), template hierarchy, and REST API',
+        'conventions. Write code that integrates with WordPress, not code that ignores it.',
+    ]);
+
+    return implode("\n", $lines);
+}
+
+/**
  * Render the branded admin header with logo and background color.
  */
 function novamira_render_admin_header(): void
