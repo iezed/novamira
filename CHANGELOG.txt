@@ -1,3 +1,6 @@
+v1.0.0 - 2026/03/10
+* 🎉 First stable release.
+
 v1.0.0-rc4 - 2026/03/06
 * New: Domain-locking for AI abilities — the site hostname is stored when abilities are enabled. If the domain changes (e.g. a staging database is restored on a different server), abilities automatically deactivate and an admin notice explains what happened.
 * New: MCP server instructions — AI agents now receive context about the WordPress environment (version, active plugins) during MCP initialization.
