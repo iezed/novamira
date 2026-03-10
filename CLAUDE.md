@@ -17,3 +17,4 @@ mago analyze   # static analysis (PHP 8.0, includes WP stubs)
 Mago config is in `mago.toml`. Source paths: `includes/` and `novamira.php`. WordPress stubs are in `vendor/php-stubs/wordpress-stubs` and `stubs/`.
 
 
+NEVER modify release-info.json by hand unless explicitly instructed to do so, that is modified programmatically
