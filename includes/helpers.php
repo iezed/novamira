@@ -260,8 +260,8 @@ function novamira_render_admin_header(): void
     <style>
         .novamira-admin-header-wrap {
             background: #000;
-            margin: 0 -20px 10px -22px;
-            padding: 20px;
+            margin: -1px 0 0 -20px;
+            padding: 20px 20px 20px 22px;
         }
         .novamira-admin-header {
             margin: 0 auto;
@@ -273,7 +273,7 @@ function novamira_render_admin_header(): void
         }
         @media screen and (max-width: 782px) {
             .novamira-admin-header-wrap {
-                margin: -10px -12px 20px -12px;
+                margin: -1px 0 0 -10px;
                 padding: 15px;
             }
             .novamira-admin-header {

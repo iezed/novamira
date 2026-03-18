@@ -62,8 +62,8 @@ function novamira_render_sandbox_page()
     $is_crashed = file_exists($sandbox_dir . '.crashed');
 
     ?>
+    <?php novamira_render_admin_header(); ?>
     <div class="wrap">
-        <?php novamira_render_admin_header(); ?>
         <h1><?php esc_html_e('Sandbox Files', domain: 'novamira'); ?></h1>
         <?php if ($result_message !== null) { ?>
             <div class="notice notice-success is-dismissible"><p><?php echo esc_html($result_message); ?></p></div>
@@ -246,8 +246,8 @@ function novamira_render_settings_page()
         ],
     ];
     ?>
+    <?php novamira_render_admin_header(); ?>
     <div class="wrap">
-        <?php novamira_render_admin_header(); ?>
         <h1><?php esc_html_e('Novamira Settings', domain: 'novamira'); ?></h1>
         <form method="post" action="" id="novamira-settings-form">
             <?php wp_nonce_field('novamira_settings'); ?>

@@ -615,8 +615,8 @@ function novamira_render_connect_page(): void
         .novamira-placeholder { background: #d63638; color: #fff; padding: 1px 4px; border-radius: 3px; }
     </style>
 
+    <?php novamira_render_admin_header(); ?>
     <div class="wrap">
-        <?php novamira_render_admin_header(); ?>
         <h1><?php esc_html_e('Configuration', domain: 'novamira'); ?></h1>
 
         <?php if (!novamira_is_enabled()): ?>
