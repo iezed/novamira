@@ -195,6 +195,41 @@ function novamira_permission_callback()
 }
 
 /**
+ * Detect active languages from multilingual plugins (WPML, Polylang, TranslatePress).
+ *
+ * @return array{plugin: string, languages: string[]}|null Plugin name and language codes, or null if no multilingual plugin is active.
+ */
+function novamira_get_active_languages()
+{
+    // WPML.
+    if (function_exists('icl_get_languages')) {
+        /** @var array<string, array{language_code: string}>|false $wpml_languages */
+        $wpml_languages = icl_get_languages('skip_missing=0');
+        if (is_array($wpml_languages)) {
+            return ['plugin' => 'WPML', 'languages' => array_column($wpml_languages, 'language_code')];
+        }
+    }
+
+    // Polylang.
+    if (function_exists('pll_languages_list')) {
+        /** @var string[]|false $languages */
+        $languages = pll_languages_list();
+        if (is_array($languages)) {
+            return ['plugin' => 'Polylang', 'languages' => $languages];
+        }
+    }
+
+    // TranslatePress.
+    if (class_exists('TRP_Translate_Press')) {
+        /** @var array{translation-languages?: string[]} $trp_settings */
+        $trp_settings = get_option('trp_settings', default_value: []);
+        return ['plugin' => 'TranslatePress', 'languages' => $trp_settings['translation-languages'] ?? []];
+    }
+
+    return null;
+}
+
+/**
  * Build the MCP server instructions sent to AI agents during initialization.
  *
  * Includes environment info (PHP/WP versions, plugins) and guidance on using
@@ -209,9 +244,16 @@ function novamira_build_server_instructions()
         '',
         '## Environment',
         '',
-        'WordPress ' . get_bloginfo('version') . ' — PHP ' . PHP_VERSION,
-        '',
+        'WordPress ' . get_bloginfo('version') . ' — PHP ' . PHP_VERSION . ' — Locale: ' . get_locale(),
     ];
+
+    // Detect active languages from multilingual plugins.
+    $multilingual = novamira_get_active_languages();
+    if ($multilingual !== null && $multilingual['languages'] !== []) {
+        $lines[] = 'Multilingual (' . $multilingual['plugin'] . '): ' . implode(', ', $multilingual['languages']);
+    }
+
+    $lines[] = '';
 
     if (function_exists('get_plugins')) {
         /** @var array<string, array{Name?: string, Version?: string}> $all_plugins */
