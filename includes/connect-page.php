@@ -390,7 +390,11 @@ function novamira_build_configs(string $rest_url, string $username, string $disp
  */
 function novamira_render_config_section(string $rest_url, string $username, string $display_password): void
 {
-    $default_name = 'wordpress';
+    /** @var string $site_host */
+    $site_host = wp_parse_url(home_url(), PHP_URL_HOST) ?? 'wordpress';
+    $site_slug = (string) preg_replace(pattern: '/^www\./', replacement: '', subject: $site_host);
+    $site_slug = (string) preg_replace(pattern: '/[^a-z0-9-]+/', replacement: '-', subject: strtolower($site_slug));
+    $default_name = 'novamira-' . trim($site_slug, characters: '-');
     $name_placeholder = '__NOVAMIRA_MCP_NAME__';
     $configs = novamira_build_configs($rest_url, $username, $display_password, $name_placeholder);
     $configs_json = (string) wp_json_encode($configs);
