@@ -65,6 +65,23 @@ if (!class_exists('WP_Ability')) {
     return;
 }
 
+// Add "Community" link to the plugin row meta on the Plugins page.
+add_filter(
+    'plugin_row_meta',
+    /** @param string[] $plugin_meta */
+    static function (array $plugin_meta, string $plugin_file): array {
+        if ($plugin_file === plugin_basename(__FILE__)) {
+            $plugin_meta[] =
+                '<a href="https://www.facebook.com/groups/dynamic.ooo" target="_blank" rel="noopener noreferrer">'
+                . esc_html__('Community', domain: 'novamira')
+                . '</a>';
+        }
+        return $plugin_meta;
+    },
+    priority: 10,
+    accepted_args: 2,
+);
+
 // Handle form actions early (before headers are sent) for PRG redirect.
 add_action('admin_init', static function () {
     $page = $_GET['page'] ?? null;
