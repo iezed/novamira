@@ -311,6 +311,7 @@ function novamira_build_configs(string $rest_url, string $username, string $disp
     $npx_server = novamira_build_npx_server($rest_url, $username, $display_password);
 
     $mcp_servers_json = (string) json_encode(['mcpServers' => [$mcp_name => $npx_server]], $opts);
+    $vscode_servers_json = (string) json_encode(['servers' => [$mcp_name => $npx_server]], $opts);
 
     /* translators: %s: config file name wrapped in <code> tags */
     $add_to = __('Add to %s.', domain: 'novamira');
@@ -335,7 +336,7 @@ function novamira_build_configs(string $rest_url, string $username, string $disp
             'isShell' => false,
         ],
         'vscode' => [
-            'code' => (string) json_encode(['servers' => [$mcp_name => $npx_server]], $opts),
+            'code' => $vscode_servers_json,
             'hint' => sprintf($add_to, '<code>mcp.json</code>'),
             'paths' => [
                 __('Workspace', domain: 'novamira') => '.vscode/mcp.json',
@@ -378,6 +379,76 @@ function novamira_build_configs(string $rest_url, string $username, string $disp
             ],
             'isShell' => false,
         ],
+        'cline' => [
+            'code' => $mcp_servers_json,
+            'hint' => sprintf($add_to, '<code>cline_mcp_settings.json</code>'),
+            'paths' => [
+                __('Via UI', domain: 'novamira') => __(
+                    'Cline sidebar → MCP Servers → Configure MCP Servers',
+                    domain: 'novamira',
+                ),
+            ],
+            'isShell' => false,
+        ],
+        'roo-code' => [
+            'code' => $mcp_servers_json,
+            'hint' => sprintf($add_to, '<code>mcp.json</code>'),
+            'paths' => [
+                __('Project', domain: 'novamira') => '.roo/mcp.json',
+                __('Via UI', domain: 'novamira') => __(
+                    'Roo Code sidebar → MCP Servers → Configure MCP Servers',
+                    domain: 'novamira',
+                ),
+            ],
+            'isShell' => false,
+        ],
+        'kilo-code' => [
+            'code' => $mcp_servers_json,
+            'hint' => sprintf($add_to, '<code>mcp.json</code>'),
+            'paths' => [
+                __('Project', domain: 'novamira') => '.kilocode/mcp.json',
+                __('Via UI', domain: 'novamira') => __(
+                    'Kilo Code sidebar → MCP Servers → Configure MCP Servers',
+                    domain: 'novamira',
+                ),
+            ],
+            'isShell' => false,
+        ],
+        'github-copilot' => [
+            'code' => $vscode_servers_json,
+            'hint' => sprintf($add_to, '<code>mcp.json</code>'),
+            'paths' => [
+                __('Project', domain: 'novamira') => '.github/copilot/mcp.json',
+            ],
+            'isShell' => false,
+        ],
+        'amazon-q' => [
+            'code' => $mcp_servers_json,
+            'hint' => sprintf($add_to, '<code>mcp.json</code>'),
+            'paths' => [
+                __('Global', domain: 'novamira') => '~/.aws/amazonq/mcp.json',
+                __('Project', domain: 'novamira') => '.amazonq/mcp.json',
+            ],
+            'isShell' => false,
+        ],
+        'gemini-cli' => [
+            'code' => $mcp_servers_json,
+            'hint' => sprintf($add_to, '<code>settings.json</code>'),
+            'paths' => [
+                __('Global', domain: 'novamira') => '~/.gemini/settings.json',
+                __('Project', domain: 'novamira') => '.gemini/settings.json',
+            ],
+            'isShell' => false,
+        ],
+        'antigravity' => [
+            'code' => $mcp_servers_json,
+            'hint' => sprintf($add_to, '<code>mcp_config.json</code>'),
+            'paths' => [
+                'macOS / Linux' => '~/.gemini/antigravity/mcp_config.json',
+                'Windows' => '%USERPROFILE%\\.gemini\\antigravity\\mcp_config.json',
+            ],
+            'isShell' => false,
+        ],
     ];
 }
 
@@ -402,10 +473,17 @@ function novamira_render_config_section(string $rest_url, string $username, stri
     $clients = [
         'claude-code' => 'Claude Code',
         'claude-desktop' => 'Claude Desktop',
+        'antigravity' => 'Antigravity',
         'cursor' => 'Cursor',
         'vscode' => 'VS Code',
+        'github-copilot' => 'GitHub Copilot',
         'windsurf' => 'Windsurf',
+        'cline' => 'Cline',
+        'gemini-cli' => 'Gemini CLI',
+        'roo-code' => 'Roo Code',
+        'amazon-q' => 'Amazon Q',
         'zed' => 'Zed',
+        'kilo-code' => 'Kilo Code',
         'opencode' => 'OpenCode',
     ];
 
@@ -414,10 +492,10 @@ function novamira_render_config_section(string $rest_url, string $username, stri
     <h2><?php
 
     /* translators: step number and section title */
-    esc_html_e('2. Add to Your MCP Client Config', domain: 'novamira');
+    esc_html_e('2. Connect Your AI Client', domain: 'novamira');
     ?></h2>
     <p>
-        <?php esc_html_e('Select your AI client to get the right config snippet.', domain: 'novamira'); ?>
+        <?php esc_html_e('Select your AI client to get the connection instructions.', domain: 'novamira'); ?>
         <?php printf(
             /* translators: %s: link to Node.js website */
             esc_html__('Requires %s (provides npm/npx).', domain: 'novamira'),
