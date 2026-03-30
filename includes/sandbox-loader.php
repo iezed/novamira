@@ -14,6 +14,29 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
+/**
+ * Shutdown handler that creates a .crashed marker only when a fatal error originated from a sandbox file.
+ */
+function novamira_sandbox_crash_handler(string $crashed_file, string $sandbox_dir): void
+{
+    $error = error_get_last();
+    if ($error === null) {
+        return;
+    }
+
+    // Only react to fatal error types that kill execution.
+    if (!($error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR))) {
+        return;
+    }
+
+    // Only flag as crash if the error originated from a sandbox file.
+    if (strncmp($error['file'], $sandbox_dir, strlen($sandbox_dir)) !== 0) {
+        return;
+    }
+
+    file_put_contents($crashed_file, (string) wp_json_encode($error), LOCK_EX);
+}
+
 (static function () {
     $sandbox_dir = NOVAMIRA_SANDBOX_DIR;
 
@@ -37,9 +60,9 @@ if (!defined('ABSPATH')) {
         return;
     }
 
-    // Crash detection: .loading persisting from previous request means a fatal occurred.
+    // Clean up legacy .loading marker if present.
     if (file_exists($loading_file)) {
-        rename($loading_file, $crashed_file);
+        unlink($loading_file);
     }
 
     // Crash recovery: .crashed exists → stay in safe mode.
@@ -75,17 +98,25 @@ if (!defined('ABSPATH')) {
         return;
     }
 
-    // Normal load: create .loading marker, load files, remove marker.
+    // Normal load with shutdown-based crash detection.
     $files = glob($sandbox_dir . '*.php');
     if (!$files) {
         return;
     }
 
-    file_put_contents($loading_file, gmdate('c'), LOCK_EX);
+    // The shutdown function detects fatal errors during sandbox loading.
+    // If loading completes, the constant is defined and the handler becomes a no-op.
+    register_shutdown_function(static function () use ($crashed_file, $sandbox_dir) {
+        if (defined('NOVAMIRA_SANDBOX_LOADED')) {
+            return;
+        }
+
+        novamira_sandbox_crash_handler($crashed_file, $sandbox_dir);
+    });
 
     foreach ($files as $file) {
         require_once $file;
     }
 
-    unlink($loading_file);
+    define('NOVAMIRA_SANDBOX_LOADED', value: true);
 })();
