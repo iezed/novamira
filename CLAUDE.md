@@ -2,7 +2,7 @@
 
 Novamira gives AI agents **unrestricted control over a WordPress installation** through the WordPress Abilities API + MCP Adapter. The core idea: with arbitrary PHP execution and full filesystem access, an agent can do *anything* WordPress can do — install plugins, modify themes, query the database, call external APIs, create custom functionality on the fly. The abilities are intentionally unconstrained building blocks; the plugin's value is that it turns a WordPress site into a fully programmable environment for AI.
 
-Requires WordPress 6.9+ and the MCP Adapter plugin.
+Requires WordPress 6.9+. The MCP Adapter is bundled as a Composer dependency (`wordpress/mcp-adapter`, at `vendor/wordpress/mcp-adapter/`).
 
 ## Code Quality
 
