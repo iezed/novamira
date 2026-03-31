@@ -1,4 +1,5 @@
 * Fix: Sandbox crash detection now uses a shutdown handler instead of a file marker, eliminating false positives from concurrent requests and external code calling exit().
+* Remove: PHP syntax validation from write-file and edit-file abilities — the sandbox already catches syntax errors at runtime, making pre-write validation redundant.
 
 v1.0.1 - 2026/03/26
 * New: Configuration instructions for 7 additional MCP clients: Cline, Roo Code, Kilo Code, GitHub Copilot, Amazon Q, Gemini CLI, and Antigravity.
