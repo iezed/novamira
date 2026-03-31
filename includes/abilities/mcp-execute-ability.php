@@ -67,7 +67,7 @@ wp_register_ability('mcp-adapter/execute-ability', [
         }
         /** @var array<string, mixed>|null $params */
         $params = $input['parameters'] ?? null;
-        $result = $ability->check_permissions($params !== null && $params !== [] ? $params : null);
+        $result = $ability->check_permissions($params);
         if (is_wp_error($result)) {
             return $result;
         }
@@ -86,7 +86,7 @@ wp_register_ability('mcp-adapter/execute-ability', [
 
         try {
             /** @var mixed $result */
-            $result = $ability->execute($params !== null && $params !== [] ? $params : null);
+            $result = $ability->execute($params);
             if (is_wp_error($result)) {
                 return ['success' => false, 'error' => $result->get_error_message()];
             }

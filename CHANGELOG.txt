@@ -1,3 +1,4 @@
+* Fix: Execute-ability coerced empty parameters (`{}`) to `null`, causing "input is not of type object" validation errors for abilities with all-optional properties.
 * Fix: Sandbox crash detection now uses a shutdown handler instead of a file marker, eliminating false positives from concurrent requests and external code calling exit().
 * Remove: PHP syntax validation from write-file and edit-file abilities — the sandbox already catches syntax errors at runtime, making pre-write validation redundant.
 
