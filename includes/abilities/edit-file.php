@@ -81,30 +81,6 @@ wp_register_ability('novamira/edit-file', [
 ]);
 
 /**
- * Validate PHP syntax for sandbox PHP files. Returns true or WP_Error.
- *
- * @param string $resolved    Absolute resolved path to the file.
- * @param string $new_content The new file content to validate.
- * @return true|WP_Error
- */
-function novamira_edit_validate_sandbox_php(string $resolved, string $new_content)
-{
-    $sandbox_dir = novamira_get_sandbox_dir(ensure_exists: false);
-    $real_sandbox = realpath($sandbox_dir);
-    $real_resolved = realpath($resolved);
-
-    if ($real_sandbox === false || $real_resolved === false) {
-        return true;
-    }
-
-    if (!str_starts_with($real_resolved, $real_sandbox)) {
-        return true;
-    }
-
-    return novamira_validate_php_syntax($new_content);
-}
-
-/**
  * Replace the first occurrence of a substring.
  *
  * Assumes $old_string exists in $content (caller must verify).
@@ -179,14 +155,6 @@ function novamira_edit_file($input)
     $new_content = $replace_all
         ? str_replace($old_string, $new_string, $content)
         : novamira_edit_replace_first($content, $old_string, $new_string);
-
-    // PHP syntax validation for sandbox PHP files.
-    if (strtolower(pathinfo($resolved, PATHINFO_EXTENSION)) === 'php') {
-        $syntax_error = novamira_edit_validate_sandbox_php($resolved, $new_content);
-        if (is_wp_error($syntax_error)) {
-            return $syntax_error;
-        }
-    }
 
     $bytes_written = file_put_contents($resolved, $new_content, LOCK_EX);
     if ($bytes_written === false) {

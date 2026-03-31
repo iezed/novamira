@@ -84,7 +84,7 @@ wp_register_ability('novamira/execute-php', [
                 '  (wp-content/novamira-sandbox/) using the write-file ability.',
                 '- Code executed here via eval() is temporary and does not persist across requests.',
                 '- Do NOT use eval to require/include files that may have errors — use write-file',
-                '  which validates syntax first.',
+                '  to persist them instead.',
             ]),
             'readonly' => false,
             'destructive' => true,

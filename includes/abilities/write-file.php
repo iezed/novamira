@@ -81,7 +81,6 @@ wp_register_ability('novamira/write-file', [
                 '- PHP files (*.php) can ONLY be written to: wp-content/novamira-sandbox/',
                 '- Use a path like "wp-content/novamira-sandbox/my-feature.php"',
                 '- Non-PHP files can be written anywhere under ABSPATH.',
-                '- PHP files are checked for syntax errors before writing when possible.',
                 '- Sandbox plugins are loaded by a mu-plugin loader on every request.',
                 '',
                 'CRASH RECOVERY:',
@@ -180,26 +179,6 @@ function novamira_ensure_parent_dir(string $parent_dir): array|WP_Error
 }
 
 /**
- * Get the content to use for PHP syntax validation, merging existing content for append mode.
- *
- * @param string $resolved Absolute resolved path to the file.
- * @param string $content  New content to write.
- * @param string $mode     Write mode ('overwrite' or 'append').
- * @return string Content to validate.
- */
-function novamira_get_validate_content(string $resolved, string $content, string $mode): string
-{
-    if ($mode === 'append' && file_exists($resolved)) {
-        $existing = file_get_contents($resolved);
-        if ($existing !== false) {
-            return $existing . $content;
-        }
-    }
-
-    return $content;
-}
-
-/**
  * Write content to a file.
  *
  * @param array $input Input with 'path', 'content', optional 'encoding', 'mode', 'create_directories'.
@@ -241,14 +220,6 @@ function novamira_write_file($input)
         return $directories_created;
     }
 
-    if ($is_php) {
-        $validate_content = novamira_get_validate_content($resolved, $content, $mode);
-        $syntax_error = novamira_validate_php_syntax($validate_content);
-        if (is_wp_error($syntax_error)) {
-            return $syntax_error;
-        }
-    }
-
     $flags = LOCK_EX;
     if ($mode === 'append') {
         $flags |= FILE_APPEND;
@@ -270,41 +241,4 @@ function novamira_write_file($input)
         'directories_created' => $directories_created,
         'size' => filesize($resolved),
     ];
-}
-
-/**
- * Validate PHP syntax by writing to a temp file and running php -l.
- *
- * @param string $content PHP content to validate.
- * @return true|WP_Error True if valid, WP_Error with syntax error details.
- */
-function novamira_validate_php_syntax($content)
-{
-    // Graceful fallback if exec() is disabled.
-    if (!function_exists('exec') || !defined('PHP_BINARY') || !PHP_BINARY) {
-        return true;
-    }
-
-    $tmp = tempnam(directory: sys_get_temp_dir(), prefix: 'novamira_lint_');
-    if ($tmp === false) {
-        return true; // Can't create temp file — skip validation.
-    }
-
-    file_put_contents($tmp, $content, LOCK_EX);
-
-    $output = [];
-    $return_var = 0;
-    exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($tmp) . ' 2>&1', $output, $return_var);
-
-    unlink($tmp);
-
-    if ($return_var !== 0) {
-        // Replace the temp file path with a generic name in error messages.
-        $error_output = implode("\n", $output);
-        $error_output = str_replace(search: $tmp, replace: 'file.php', subject: $error_output);
-
-        return new WP_Error('php_syntax_error', sprintf('PHP syntax validation failed: %s', $error_output));
-    }
-
-    return true;
 }
