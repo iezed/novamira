@@ -15,10 +15,17 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Shutdown handler that creates a .crashed marker only when a fatal error originated from a sandbox file.
+ * Shutdown handler that creates a .crashed marker when a fatal error occurs while a sandbox file is loading.
+ *
+ * @param string      $crashed_file        Path to the .crashed marker file.
+ * @param string|null $current_sandbox_file The sandbox file currently being loaded, or null if loading is complete.
  */
-function novamira_sandbox_crash_handler(string $crashed_file, string $sandbox_dir): void
+function novamira_sandbox_crash_handler(string $crashed_file, ?string $current_sandbox_file): void
 {
+    if ($current_sandbox_file === null) {
+        return;
+    }
+
     $error = error_get_last();
     if ($error === null) {
         return;
@@ -29,11 +36,7 @@ function novamira_sandbox_crash_handler(string $crashed_file, string $sandbox_di
         return;
     }
 
-    // Only flag as crash if the error originated from a sandbox file.
-    if (strncmp($error['file'], $sandbox_dir, strlen($sandbox_dir)) !== 0) {
-        return;
-    }
-
+    $error['sandbox_file'] = $current_sandbox_file;
     file_put_contents($crashed_file, (string) wp_json_encode($error), LOCK_EX);
 }
 
@@ -104,19 +107,19 @@ function novamira_sandbox_crash_handler(string $crashed_file, string $sandbox_di
         return;
     }
 
-    // The shutdown function detects fatal errors during sandbox loading.
-    // If loading completes, the constant is defined and the handler becomes a no-op.
-    register_shutdown_function(static function () use ($crashed_file, $sandbox_dir) {
-        if (defined('NOVAMIRA_SANDBOX_LOADED')) {
-            return;
-        }
+    // Tracks which sandbox file is currently being loaded. The shutdown handler uses this to
+    // detect crashes even when the fatal error is thrown from a core or third-party file in the
+    // call chain (e.g. sandbox file → get_header() → wp_head() → fatal in wp-includes/).
+    // Set to null after the loop completes, which makes the handler a no-op.
+    $current_sandbox_file = null;
 
-        novamira_sandbox_crash_handler($crashed_file, $sandbox_dir);
+    register_shutdown_function(static function () use ($crashed_file, &$current_sandbox_file) {
+        novamira_sandbox_crash_handler($crashed_file, $current_sandbox_file);
     });
 
     foreach ($files as $file) {
+        $current_sandbox_file = $file;
         require_once $file;
     }
-
-    define('NOVAMIRA_SANDBOX_LOADED', value: true);
+    $current_sandbox_file = null;
 })();

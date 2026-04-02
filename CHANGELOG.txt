@@ -1,3 +1,5 @@
+* Fix: Sandbox crash detection failed to detect fatal errors thrown indirectly from WordPress core or third-party code called by a sandbox file. The handler now tracks which sandbox file is actively loading instead of checking the error's file path.
+
 v1.0.2 - 2026/04/01
 * Fix: Sandbox crash detection now uses a shutdown handler instead of a file marker, eliminating false positives from concurrent requests and external code calling exit().
 * Fix: Execute-ability coerced empty parameters (`{}`) to `null`, causing "input is not of type object" validation errors for abilities with all-optional properties.
